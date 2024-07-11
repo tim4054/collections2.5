@@ -33,5 +33,12 @@ public class EmployeeController {
         return employeeService.findPerson(firstName, lastName).toString();
     }
 
+    @GetMapping("/employee/delete")
+    public String deletePerson(@RequestParam (value = "firstName") String firstName,
+                             @RequestParam (value = "lastName") String lastName){
+        String result = employeeService.deletePerson(firstName, lastName);
+        return result;
+    }
+
 }
 

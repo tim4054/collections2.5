@@ -8,12 +8,11 @@ import ru.nugumanov.hw25.exceptions.exceptions.EmployeeStorageIsFullException;
 import java.util.ArrayList;
 import java.util.List;
 @Service
-public class EmployeeService extends Employee {
+public class EmployeeService  {
     private static List<Employee> persons = new ArrayList<>();
     private static int MAX_VALUE = 10;
 
-    public EmployeeService(String firstName, String lastName) {
-        super(firstName, lastName);
+    public EmployeeService() {
     }
 
     public String addPerson(String firstName, String lastName) {
@@ -28,10 +27,10 @@ public class EmployeeService extends Employee {
             }
         }
         persons.add(0, person);
-        return "Сотрудник добавлен" + firstName + lastName;
+        return "Сотрудник добавлен " + firstName + lastName;
     }
 
-    public void deletePerson(String firstName, String lastName) {
+    public String deletePerson(String firstName, String lastName) {
         Employee employee = null;
         for (int i = 0; i < persons.size(); i++) {
             if (persons.get(i).getFirstName().equals(firstName) &&
@@ -44,6 +43,7 @@ public class EmployeeService extends Employee {
         } else {
             throw new EmployeeNotFoundException();
         }
+        return firstName + lastName + "удален";
     }
 
     public Employee findPerson(String firstName, String lastName) {

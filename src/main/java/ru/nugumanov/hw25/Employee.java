@@ -3,7 +3,7 @@ package ru.nugumanov.hw25;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-@Service
+
 public class Employee {
     private String firstName;
     private String lastName;
