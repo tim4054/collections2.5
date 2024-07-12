@@ -1,14 +1,13 @@
 package ru.nugumanov.hw25;
 
 import org.springframework.stereotype.Service;
-import ru.nugumanov.hw25.exceptions.exceptions.EmployeeAlreadyAddedException;
-import ru.nugumanov.hw25.exceptions.exceptions.EmployeeNotFoundException;
-import ru.nugumanov.hw25.exceptions.exceptions.EmployeeStorageIsFullException;
+import ru.nugumanov.hw25.exceptions.exceptions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
-public class EmployeeService  {
+public class EmployeeService {
     private static List<Employee> persons = new ArrayList<>();
     private static int MAX_VALUE = 10;
 
@@ -17,6 +16,9 @@ public class EmployeeService  {
 
     public String addPerson(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
+        if (firstName == null || lastName == null) {
+            throw new EmployeeNotFoundParameter();
+        }
         if (MAX_VALUE <= persons.size()) {
             throw new EmployeeStorageIsFullException();
         }
@@ -27,11 +29,14 @@ public class EmployeeService  {
             }
         }
         persons.add(0, person);
-        return "Сотрудник добавлен " + firstName + lastName;
+        return "Сотрудник добавлен " + firstName + " " + lastName;
     }
 
     public String deletePerson(String firstName, String lastName) {
         Employee employee = null;
+        if (firstName == null || lastName == null) {
+            throw new EmployeeNotFoundParameter();
+        }
         for (int i = 0; i < persons.size(); i++) {
             if (persons.get(i).getFirstName().equals(firstName) &&
                     persons.get(i).getLastName().equals(lastName)) {
@@ -43,14 +48,17 @@ public class EmployeeService  {
         } else {
             throw new EmployeeNotFoundException();
         }
-        return firstName + lastName + "удален";
+        return firstName + " " + lastName + " удален";
     }
 
     public Employee findPerson(String firstName, String lastName) {
+        //notParameter(firstName,lastName);
+        if (firstName == null || lastName == null) {
+            throw new EmployeeNotFoundParameter();
+        }
         Employee result = null;
         if (persons.isEmpty()) {
-            System.out.println("Нет сотрудников");
-            ;
+            throw new PersonsIsEmptyExceptoin();
         }
         for (int i = 0; i < persons.size(); i++) {
             if (persons.get(i).getFirstName().equals(firstName) &&
@@ -62,11 +70,23 @@ public class EmployeeService  {
         }
         if (result == null) {
             throw new EmployeeNotFoundException();
-        } else {
-            System.out.println(result);
         }
         return result;
     }
+
+    public String showAll() {
+        if (persons.isEmpty()) {
+            throw new PersonsIsEmptyExceptoin();
+        } else {
+            return persons.toString();
+        }
+    }
+
+    /*private static void notParameter(String firstName, String lastName) {
+        if (firstName == null || lastName == null) {
+            throw new EmployeeNotFoundParameter();
+        }
+    }*/
 
     public static void main(String[] args) {
         /*EmployeeService.addPerson("Тим", "Нуг1");
