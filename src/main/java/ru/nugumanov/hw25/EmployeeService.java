@@ -3,17 +3,15 @@ package ru.nugumanov.hw25;
 import org.springframework.stereotype.Service;
 import ru.nugumanov.hw25.exceptions.exceptions.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EmployeeService {
-    private final List<Employee> persons = new ArrayList<>();
+    private final Map<String, Employee> persons;
     private final int MAX_VALUE = 10;
 
-    public EmployeeService() {
+    public EmployeeService(Map<String, Employee> persons) {
+        this.persons = persons;
     }
 
     public Employee addPerson(String firstName, String lastName) {
@@ -23,19 +21,19 @@ public class EmployeeService {
         if (MAX_VALUE <= persons.size()) {
             throw new EmployeeStorageIsFullException();
         }
-        if (persons.contains(person)) {
+        if (persons.containsKey(person)) {
             throw new EmployeeAlreadyAddedException();
         }
-        persons.add(0, person);
+        persons.put(String.format(firstName + lastName), person);
         return person;
     }
 
     public Employee deletePerson(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
         notParameter(firstName, lastName);
-        checkEmptyList();
-        if (persons.contains(person)) {
-            persons.remove(person);
+        checkEmptyMap();
+        if (persons.containsKey(String.format(firstName+lastName))) {
+            persons.remove(String.format(firstName+lastName));
         } else {
             throw new EmployeeNotFoundException();
         }
@@ -45,16 +43,16 @@ public class EmployeeService {
     public Employee findPerson(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
         notParameter(firstName, lastName);
-        checkEmptyList();
-        if (persons.contains(person)) {
+        checkEmptyMap();
+        if (persons.containsKey(String.format(firstName+lastName))) {
             return person;
         }
         throw new EmployeeNotFoundException();
     }
 
     public Collection<Employee> showAll() {
-        checkEmptyList();
-        return Collections.unmodifiableList(persons);
+        checkEmptyMap();
+        return Collections.unmodifiableMap(persons).values();
 
     }
 
@@ -64,10 +62,22 @@ public class EmployeeService {
         }
     }
 
-    private  void checkEmptyList() {
+    private void checkEmptyMap() {
         if (persons.isEmpty()) {
             throw new EmployeeNotFoundParameter();
         }
+    }
+
+    public static void main(String[] args) {
+        Map<String, Employee> employees = new HashMap<>();
+        EmployeeService employeeService = new EmployeeService(employees);
+        employeeService.addPerson("Тимур", "Нугуманов");
+        employeeService.addPerson("Тимур", "Нугуманов");
+        employeeService.addPerson("Юлия", "Нугуманова");
+        employeeService.deletePerson("Юлия", "Нугуманова");
+        System.out.println(employeeService.findPerson("Тимур", "Нугуманов"));
+
+        System.out.println(employees);
     }
 }
 
