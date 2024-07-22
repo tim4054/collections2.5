@@ -1,21 +1,24 @@
-package ru.nugumanov.hw25;
+package ru.nugumanov.hw25.service.impl;
 
 import org.springframework.stereotype.Service;
 import ru.nugumanov.hw25.exceptions.exceptions.*;
+import ru.nugumanov.hw25.models.Employee;
+import ru.nugumanov.hw25.service.EmployeeService;
 
 import java.util.*;
 
 @Service
-public class EmployeeService {
+public class EmployeeServiceImpl implements EmployeeService {
     private final Map<String, Employee> persons;
     private final int MAX_VALUE = 10;
 
-    public EmployeeService(Map<String, Employee> persons) {
+    public EmployeeServiceImpl(Map<String, Employee> persons) {
         this.persons = persons;
     }
 
-    public Employee addPerson(String firstName, String lastName) {
-        Employee person = new Employee(firstName, lastName);
+    @Override
+    public Employee addPerson(String firstName, String lastName, int department, double salary) {
+        Employee person = new Employee(firstName, lastName, salary, department);
         notParameter(firstName, lastName);
 
         if (MAX_VALUE <= persons.size()) {
@@ -28,56 +31,47 @@ public class EmployeeService {
         return person;
     }
 
+    @Override
     public Employee deletePerson(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
         notParameter(firstName, lastName);
         checkEmptyMap();
-        if (persons.containsKey(String.format(firstName+lastName))) {
-            persons.remove(String.format(firstName+lastName));
+        if (persons.containsKey(String.format(firstName + lastName))) {
+            persons.remove(String.format(firstName + lastName));
         } else {
             throw new EmployeeNotFoundException();
         }
         return person;
     }
 
+    @Override
     public Employee findPerson(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
         notParameter(firstName, lastName);
         checkEmptyMap();
-        if (persons.containsKey(String.format(firstName+lastName))) {
+        if (persons.containsKey(String.format(firstName + lastName))) {
             return person;
         }
         throw new EmployeeNotFoundException();
     }
 
+    @Override
     public Collection<Employee> showAll() {
         checkEmptyMap();
         return Collections.unmodifiableMap(persons).values();
 
     }
 
-    private void notParameter(String firstName, String lastName) {
-        if (firstName == null || lastName == null) {
-            throw new EmployeeNotFoundParameter();
-        }
-    }
-
-    private void checkEmptyMap() {
+    public void checkEmptyMap() {
         if (persons.isEmpty()) {
             throw new EmployeeNotFoundParameter();
         }
     }
 
-    public static void main(String[] args) {
-        Map<String, Employee> employees = new HashMap<>();
-        EmployeeService employeeService = new EmployeeService(employees);
-        employeeService.addPerson("Тимур", "Нугуманов");
-        employeeService.addPerson("Тимур", "Нугуманов");
-        employeeService.addPerson("Юлия", "Нугуманова");
-        employeeService.deletePerson("Юлия", "Нугуманова");
-        System.out.println(employeeService.findPerson("Тимур", "Нугуманов"));
-
-        System.out.println(employees);
+    public void notParameter(String firstName, String lastName) {
+        if (firstName == null || lastName == null) {
+            throw new EmployeeNotFoundParameter();
+        }
     }
 }
 

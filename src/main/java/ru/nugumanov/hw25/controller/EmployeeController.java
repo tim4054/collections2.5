@@ -6,19 +6,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ru.nugumanov.hw25.Employee;
-import ru.nugumanov.hw25.EmployeeService;
-import ru.nugumanov.hw25.exceptions.exceptions.*;
+import ru.nugumanov.hw25.models.Employee;
+import ru.nugumanov.hw25.service.impl.EmployeeServiceImpl;
 
 import java.util.Collection;
 
 @RestController()
 @RequestMapping("/employee")
 public class EmployeeController {
-    EmployeeService employeeService;
+    EmployeeServiceImpl employeeServiceImpl;
 
-    public EmployeeController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
+    public EmployeeController(EmployeeServiceImpl employeeServiceImpl) {
+        this.employeeServiceImpl = employeeServiceImpl;
     }
 
     @GetMapping("/start")
@@ -29,26 +28,28 @@ public class EmployeeController {
 
     @GetMapping("/add")
     public Employee addPerson(@RequestParam(value = "firstName", required = false) String firstName,
-                              @RequestParam(value = "lastName", required = false) String lastName) {
-        return employeeService.addPerson(firstName, lastName);
+                              @RequestParam(value = "lastName", required = false) String lastName,
+                              @RequestParam(value = "department", required = false) int department,
+                              @RequestParam(value = "salary", required = false) double salary) {
+        return employeeServiceImpl.addPerson(firstName, lastName, department, salary);
     }
 
     @GetMapping("/find")
     public Employee findPerson(@RequestParam(value = "firstName", required = false) String firstName,
                                @RequestParam(value = "lastName", required = false) String lastName) {
-        return employeeService.findPerson(firstName, lastName);
+        return employeeServiceImpl.findPerson(firstName, lastName);
 
     }
 
     @GetMapping("/remove")
     public Employee deletePerson(@RequestParam(value = "firstName", required = false) String firstName,
                                  @RequestParam(value = "lastName", required = false) String lastName) {
-        return employeeService.deletePerson(firstName, lastName);
+        return employeeServiceImpl.deletePerson(firstName, lastName);
     }
 
     @GetMapping("/all")
     public Collection<Employee> showAll() {
-        return employeeService.showAll();
+        return employeeServiceImpl.showAll();
     }
 }
 
