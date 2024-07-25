@@ -1,6 +1,5 @@
 package ru.nugumanov.hw25.service;
 
-import ru.nugumanov.hw25.exceptions.exceptions.EmployeeNotFoundParameter;
 import ru.nugumanov.hw25.models.Employee;
 
 import java.util.Collection;
@@ -14,7 +13,7 @@ public interface EmployeeService {
 
     Collection<Employee> showAll();
 
-    void notParameter(String firstName, String lastName);
+    void checkNotParameter(String firstName, String lastName);
 
     void checkEmptyMap();
 }

@@ -1,5 +1,6 @@
 package ru.nugumanov.hw25.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.nugumanov.hw25.exceptions.exceptions.*;
 import ru.nugumanov.hw25.models.Employee;
@@ -18,8 +19,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee addPerson(String firstName, String lastName, int department, double salary) {
-        Employee person = new Employee(firstName, lastName, salary, department);
-        notParameter(firstName, lastName);
+        Employee person = new Employee(fixString(firstName),
+                fixString(lastName),
+                salary,
+                department);
+        checkNotParameter(firstName, lastName);
 
         if (MAX_VALUE <= persons.size()) {
             throw new EmployeeStorageIsFullException();
@@ -27,14 +31,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (persons.containsKey(person)) {
             throw new EmployeeAlreadyAddedException();
         }
-        persons.put(String.format(firstName + lastName), person);
+        persons.put(String.format(fixString(firstName)+fixString(lastName)), person);
         return person;
     }
 
     @Override
     public Employee deletePerson(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
-        notParameter(firstName, lastName);
+        checkNotParameter(firstName, lastName);
         checkEmptyMap();
         if (persons.containsKey(String.format(firstName + lastName))) {
             persons.remove(String.format(firstName + lastName));
@@ -47,7 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee findPerson(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
-        notParameter(firstName, lastName);
+        checkNotParameter(firstName, lastName);
         checkEmptyMap();
         if (persons.containsKey(String.format(firstName + lastName))) {
             return person;
@@ -59,7 +63,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Collection<Employee> showAll() {
         checkEmptyMap();
         return Collections.unmodifiableMap(persons).values();
-
     }
 
     public void checkEmptyMap() {
@@ -68,10 +71,44 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-    public void notParameter(String firstName, String lastName) {
+    public void checkNotParameter(String firstName, String lastName) {
         if (firstName == null || lastName == null) {
             throw new EmployeeNotFoundParameter();
         }
+    }
+
+    public String fixString(String string) {
+        String validSymbols = "qwertyuiopasdfghjklzxcvbnm" +
+                "QWERTYUIOPASDFGHJKLZXCVBNM" +
+                "йцукенгшщзхъфывапролджэячсмитьбю" +
+                "ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ-";
+
+        String cleanedString = StringUtils.replaceChars(string, validSymbols, "");
+        if (!cleanedString.equals("")) {
+            throw new RuntimeException("Bad request 400");
+        }
+
+        char[] s = string.toCharArray();
+        for (int i = 0; i < s.length; i++) {
+            if (s[i] == '-') {
+                String[] parts = string.split("-");
+                return (StringUtils.capitalize(parts[0].toLowerCase())+ "-" +
+                        StringUtils.capitalize(parts[1].toLowerCase()));
+            }
+        }
+        return StringUtils.capitalize(string.toLowerCase());
+        //Метод fixString() чинит строку: 1) защита от случайного CapsLock;
+        //                                2) защита от невалидных символов;
+        //                                3) работает с двойной фамилией.
+    }
+
+    //Test
+    public static void main(String[] args) {
+        Map<String, Employee> persons = new HashMap<>();
+        EmployeeService employeeService = new EmployeeServiceImpl(persons);
+        employeeService.addPerson("тимУр", "нУГУМАНОВ-ИвАнов", 1, 100);
+        System.out.println(persons);
+
     }
 }
 
