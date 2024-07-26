@@ -1,10 +1,8 @@
 package ru.nugumanov.hw25.controller;
 
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import ru.nugumanov.hw25.models.Employee;
 import ru.nugumanov.hw25.service.impl.EmployeeServiceImpl;
@@ -25,7 +23,6 @@ public class EmployeeController {
         return "Добро пожаловать";
     }
 
-
     @GetMapping("/add")
     public Employee addPerson(@RequestParam(value = "firstName", required = false) String firstName,
                               @RequestParam(value = "lastName", required = false) String lastName,
@@ -38,7 +35,6 @@ public class EmployeeController {
     public Employee findPerson(@RequestParam(value = "firstName", required = false) String firstName,
                                @RequestParam(value = "lastName", required = false) String lastName) {
         return employeeServiceImpl.findPerson(firstName, lastName);
-
     }
 
     @GetMapping("/remove")

@@ -13,8 +13,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final Map<String, Employee> persons;
     private final int MAX_VALUE = 10;
 
-    public EmployeeServiceImpl(Map<String, Employee> persons) {
-        this.persons = persons;
+    public EmployeeServiceImpl() {
+        this.persons = new HashMap<>(MAX_VALUE);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (persons.containsKey(person)) {
             throw new EmployeeAlreadyAddedException();
         }
-        persons.put(String.format(fixString(firstName)+fixString(lastName)), person);
+        persons.put(String.format(fixString(firstName) + fixString(lastName)), person);
         return person;
     }
 
@@ -67,7 +67,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     public void checkEmptyMap() {
         if (persons.isEmpty()) {
-            throw new EmployeeNotFoundParameter();
+            throw new MapIsEmptyException();
         }
     }
 
@@ -78,36 +78,43 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     public String fixString(String string) {
-        String validSymbols = "qwertyuiopasdfghjklzxcvbnm" +
+        //1-й способ:
+        /* String validSymbols = "qwertyuiopasdfghjklzxcvbnm" +
                 "QWERTYUIOPASDFGHJKLZXCVBNM" +
                 "йцукенгшщзхъфывапролджэячсмитьбю" +
                 "ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ-";
 
         String cleanedString = StringUtils.replaceChars(string, validSymbols, "");
-        if (!cleanedString.equals("")) {
+        if (!cleanedString.isBlank()) {
             throw new RuntimeException("Bad request 400");
+        }*/
+
+        //2-й способ
+
+        if (!string.matches("[a-яА-Яa-zA-Z-]+")) {
+            throw new EmployeeBadRequest();
         }
 
         char[] s = string.toCharArray();
         for (int i = 0; i < s.length; i++) {
             if (s[i] == '-') {
                 String[] parts = string.split("-");
-                return (StringUtils.capitalize(parts[0].toLowerCase())+ "-" +
-                        StringUtils.capitalize(parts[1].toLowerCase()));
+                return (StringUtils.capitalize(parts[0]) + "-" +
+                        StringUtils.capitalize(parts[1]));
             }
         }
-        return StringUtils.capitalize(string.toLowerCase());
-        //Метод fixString() чинит строку: 1) защита от случайного CapsLock;
+        return StringUtils.capitalize(string);
+        //Метод fixString() чинит строку: 1) (защита от случайного CapsLock)удалено;
         //                                2) защита от невалидных символов;
         //                                3) работает с двойной фамилией.
     }
 
     //Test
     public static void main(String[] args) {
-        Map<String, Employee> persons = new HashMap<>();
-        EmployeeService employeeService = new EmployeeServiceImpl(persons);
-        employeeService.addPerson("тимУр", "нУГУМАНОВ-ИвАнов", 1, 100);
-        System.out.println(persons);
+
+        EmployeeService employeeService = new EmployeeServiceImpl();
+        employeeService.addPerson("тимУр", "нУГУМАНОВ-ИвАнов1", 1, 100);
+        System.out.println(employeeService.showAll());
 
     }
 }
