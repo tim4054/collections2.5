@@ -1,9 +1,6 @@
 package ru.nugumanov.hw25.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.nugumanov.hw25.models.Employee;
 import ru.nugumanov.hw25.service.DepartmentService;
 
@@ -19,23 +16,28 @@ public class DepartmentController {
         this.departmentService = departmentService;
     }
 
-    @GetMapping("/max-salary")
-    public Employee getMaxSalaryByDepartment(@RequestParam("department") int departmentId) {
+    @GetMapping("/{id}/salary/max")
+    public Employee getMaxSalaryByDepartment(@PathVariable("id") Integer departmentId) {
         return departmentService.getMaxSalaryByDepartment(departmentId);
     }
 
-    @GetMapping("/min-salary")
-    public Employee getMinSalaryByDepartment(@RequestParam("department") int departmentId) {
+    @GetMapping("/{id}/salary/min")
+    public Employee getMinSalaryByDepartment(@PathVariable("id") Integer departmentId) {
         return departmentService.getMinSalaryByDepartment(departmentId);
     }
 
-    @GetMapping("/all")
-    public List<Employee> getAllByDepartment(@RequestParam("department") int departmentId) {
-        return departmentService.getAllByDepartment(departmentId);
+    @GetMapping("/{id}/employees")
+    public List<Employee> getAllEmployeesInDepartment(@PathVariable("id") Integer departmentId) {
+        return departmentService.getAllEmployeesInDepartment(departmentId);
     }
 
-    @GetMapping("/all-by-dep")
-    public Map<Integer, List<Employee>> getAllByDepartments() {
-        return departmentService.getAllByDepartments();
+    @GetMapping("/{id}/salary/sum")
+    public double getSalaryByDepartment(@PathVariable("id") Integer departmentId) {
+        return departmentService.getSalaryByDepartment(departmentId);
+    }
+
+    @GetMapping("/employees")
+    public Map<Integer, List<Employee>> getAllEmployeesByGroupsDepartments() {
+        return departmentService.getAllEmployeesByDepartmentGroups();
     }
 }

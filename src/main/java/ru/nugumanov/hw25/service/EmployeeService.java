@@ -5,7 +5,7 @@ import ru.nugumanov.hw25.models.Employee;
 import java.util.Collection;
 
 public interface EmployeeService {
-    Employee addPerson(String firstName, String lastName, int department, double salary);
+    Employee addPerson(String firstName, String lastName, Integer department, Double salary);
 
     Employee deletePerson(String firstName, String lastName);
 

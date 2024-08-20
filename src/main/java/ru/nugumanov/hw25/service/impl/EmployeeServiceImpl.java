@@ -18,28 +18,36 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee addPerson(String firstName, String lastName, int department, double salary) {
-        Employee person = new Employee(fixString(firstName),
-                fixString(lastName),
-                salary,
-                department);
-        checkNotParameter(firstName, lastName);
+    public Employee addPerson(String firstName,
+                              String lastName,
+                              Integer department,
+                              Double salary) {
+
+        checkNotParameterInAddMethod(firstName, lastName, department, salary);
+
+        Employee person = new Employee(employeeFixName(firstName),
+                employeeFixName(lastName),
+                department,
+                salary);
 
         if (MAX_VALUE <= persons.size()) {
             throw new EmployeeStorageIsFullException();
         }
-        if (persons.containsKey(person)) {
+        if (persons.containsValue(person)) {
             throw new EmployeeAlreadyAddedException();
         }
-        persons.put(String.format(fixString(firstName) + fixString(lastName)), person);
+        persons.put(String.format(employeeFixName(firstName) + employeeFixName(lastName)), person);
         return person;
     }
 
     @Override
     public Employee deletePerson(String firstName, String lastName) {
         Employee person = new Employee(firstName, lastName);
+
         checkNotParameter(firstName, lastName);
+
         checkEmptyMap();
+
         if (persons.containsKey(String.format(firstName + lastName))) {
             persons.remove(String.format(firstName + lastName));
         } else {
@@ -50,18 +58,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee findPerson(String firstName, String lastName) {
-        Employee person = new Employee(firstName, lastName);
+
         checkNotParameter(firstName, lastName);
+
         checkEmptyMap();
+
         if (persons.containsKey(String.format(firstName + lastName))) {
-            return person;
+            return persons.get(firstName + lastName);
         }
         throw new EmployeeNotFoundException();
     }
 
     @Override
     public Collection<Employee> showAll() {
+
         checkEmptyMap();
+
         return Collections.unmodifiableMap(persons).values();
     }
 
@@ -77,20 +89,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-    public String fixString(String string) {
-        //1-й способ:
-        /* String validSymbols = "qwertyuiopasdfghjklzxcvbnm" +
-                "QWERTYUIOPASDFGHJKLZXCVBNM" +
-                "йцукенгшщзхъфывапролджэячсмитьбю" +
-                "ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ-";
+    public void checkNotParameterInAddMethod(String firstName,
+                                             String lastName,
+                                             Integer department,
+                                             Double salary) {
+        if (firstName == null || lastName == null || department == null || salary == null) {
+            throw new EmployeeNotFoundParameter();
+        }
+    }
 
-        String cleanedString = StringUtils.replaceChars(string, validSymbols, "");
-        if (!cleanedString.isBlank()) {
-            throw new RuntimeException("Bad request 400");
-        }*/
-
-        //2-й способ
-
+    public String employeeFixName(String string) {
         if (!string.matches("[a-яА-Яa-zA-Z-]+")) {
             throw new EmployeeBadRequest();
         }
@@ -99,23 +107,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         for (int i = 0; i < s.length; i++) {
             if (s[i] == '-') {
                 String[] parts = string.split("-");
-                return (StringUtils.capitalize(parts[0]) + "-" +
-                        StringUtils.capitalize(parts[1]));
+                return (StringUtils.capitalize(parts[0].toLowerCase()) + "-" +
+                        StringUtils.capitalize(parts[1].toLowerCase()));
             }
         }
-        return StringUtils.capitalize(string);
-        //Метод fixString() чинит строку: 1) (защита от случайного CapsLock)удалено;
-        //                                2) защита от невалидных символов;
-        //                                3) работает с двойной фамилией.
+        return StringUtils.capitalize(string.toLowerCase());
     }
 
-    //Test
     public static void main(String[] args) {
-
         EmployeeService employeeService = new EmployeeServiceImpl();
-        employeeService.addPerson("тимУр", "нУГУМАНОВ-ИвАнов1", 1, 100);
+        //employeeService.addPerson(null, "Нугуманов", 1, 100.0);
+        employeeService.addPerson("Тимур", "Нугуманов", 1, 100.0);
+        employeeService.addPerson("Тимур", "Нугуманов", 1, 100.0);
+        employeeService.addPerson("Тимур", "Нугуманов", 1, 100.0);
+        //employeeService.addPerson("Тимур", "Нугуманов", null, 100.0);
+        //employeeService.addPerson("Тимур", "Нугуманов", 1, null);
         System.out.println(employeeService.showAll());
-
     }
 }
 
