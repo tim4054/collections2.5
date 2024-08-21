@@ -113,16 +113,5 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         return StringUtils.capitalize(string.toLowerCase());
     }
-
-    public static void main(String[] args) {
-        EmployeeService employeeService = new EmployeeServiceImpl();
-        //employeeService.addPerson(null, "Нугуманов", 1, 100.0);
-        employeeService.addPerson("Тимур", "Нугуманов", 1, 100.0);
-        employeeService.addPerson("Тимур", "Нугуманов", 1, 100.0);
-        employeeService.addPerson("Тимур", "Нугуманов", 1, 100.0);
-        //employeeService.addPerson("Тимур", "Нугуманов", null, 100.0);
-        //employeeService.addPerson("Тимур", "Нугуманов", 1, null);
-        System.out.println(employeeService.showAll());
-    }
 }
 

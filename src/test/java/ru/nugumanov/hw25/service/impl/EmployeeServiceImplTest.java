@@ -33,11 +33,10 @@ class EmployeeServiceImplTest {
     @ParameterizedTest
     @MethodSource("argumentsStream")
     @DisplayName("Кидает EmployeeNotFoundParameter, когда один из параметров == null")
-    void shouldException_WhenNullParams_ThenException(String firstName,
+    void shouldAddPerson_WhenNullParams_ThenReturnException(String firstName,
                                                       String lastName,
                                                       Integer department,
                                                       Double salary) {
-
         Assertions.assertThrows(EmployeeNotFoundParameter.class, () ->
                 service.addPerson(firstName, lastName, department, salary));
     }
@@ -45,8 +44,7 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("Кидает EmployeeStorageIsFullException, когда в коллекцию" +
             "пытаются добавить больше чем 10 объектов")
-    void shouldException_WhenMapIsFull_ThenEmployeeStorageISFullException() {
-
+    void shouldAddPerson_WhenMapIsFull_ThenReturnEmployeeStorageISFullException() {
         String firstName = "Тимур";
 
         //test
@@ -63,8 +61,7 @@ class EmployeeServiceImplTest {
     @Test
     @DisplayName("Кидает EmployeeAlreadyAddedException, когда в коллекцию " +
             "пытаются добавить уже имеющегося сотрудника")
-    void shouldException_WhenEmployeeAlreadyAdded_ThenEmployeeAlreadyAddedException() {
-
+    void shouldAddPerson_WhenEmployeeAlreadyAdded_ThenReturnEmployeeAlreadyAddedException() {
         //test
         service.addPerson("Тимур", "Нугуманов", 1, 100.0);
 
@@ -75,7 +72,6 @@ class EmployeeServiceImplTest {
 
     @Test
     void shouldDeletePerson_WhenCollectionContainsEmployee_ThenDelete() {
-
         //Добавляю тестового сотрудника,чтобы не вылетел MapsIsEmptyException
         service.addPerson("Test", "Test", 1, 100.0);
 
@@ -90,24 +86,22 @@ class EmployeeServiceImplTest {
     }
 
     @Test
-    void deletePersonException_WhenMapIsEmpty_ThenMapIsEmptyException() {
-
+    void deletePersonException_WhenMapIsEmpty_ThenReturnMapIsEmptyException() {
         Assertions.assertThrows(MapIsEmptyException.class, () -> service.deletePerson("Тимур", "Нугуманов"));
     }
 
     @Test
-    void DeletePersonException_WhenCollectionDoesNotContainsEmployee_ThenEmployeeNotFoundException() {
-
+    void DeletePersonException_WhenCollectionDoesNotContainsEmployee_ThenReturnEmployeeNotFoundException() {
         //Добавляю тестового сотрудника,чтобы не вылетел MapsIsEmptyException
         service.addPerson("Test", "Test", 1, 100.0);
 
+        //check
         Assertions.assertThrows(EmployeeNotFoundException.class, () -> service.deletePerson("Тимур", "Нугуманов"));
     }
 
 
     @Test
     void shouldFindPerson_WhenCorrectParams_ThenFindPerson() {
-
         Employee expected = service.addPerson("Тимур", "Нугуманов", 1, 100.0);
 
         //test
@@ -118,16 +112,21 @@ class EmployeeServiceImplTest {
     }
 
     @Test
-    void findPersonException_When_ThenEmployeeNotFoundException() {
-
+    void findPersonException_WhenMapDoesNotContainsEmployee_ThenEmployeeNotFoundException() {
         //Добавляю тестового сотрудника,чтобы не вылетел MapsIsEmptyException
         service.addPerson("Test", "Test", 1, 100.0);
 
+        //check
         Assertions.assertThrows(EmployeeNotFoundException.class, () -> service.findPerson("Тимур", "Нугуманов"));
     }
 
     @Test
-    void showAll() {
+    void findPersonException_WhenMapIsEmpty_ThenReturnMapIsEmptyException() {
+        Assertions.assertThrows(MapIsEmptyException.class, () -> service.findPerson("Тимур", "Нугуманов"));
+    }
+
+    @Test
+    void showAll_WhenCorrectData_WhenReturnCorrectMap() {
         Collection<Employee> expected = new ArrayList<>(List.of(
                 new Employee("Тимур", "Нугуманов", 1, 100.0),
                 new Employee("Тест", "Тестов", 1, 100.0)
@@ -143,31 +142,19 @@ class EmployeeServiceImplTest {
         Assertions.assertIterableEquals(expected, actual);
     }
 
-    @Test
-    void checkEmptyMap() {
-    }
-
-    @Test
-    void checkNotParameter() {
-    }
-
-    @Test
-    void checkNotParameterInAddMethod() {
-    }
-
     @ParameterizedTest
     @MethodSource("incorrectNames")
     void employeeFixName(String incorrectName) {
-
         String expected = "Тимур";
 
+        //test
         String actual = service.employeeFixName(incorrectName);
 
+        //check
         Assertions.assertEquals(expected, actual);
     }
 
     public static Stream<Arguments> incorrectNames() {
-
         return Stream.of(
                 Arguments.of("тимур"),
                 Arguments.of("тИМУР")

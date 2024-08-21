@@ -19,6 +19,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Employee getMaxSalaryByDepartment(int departmentId) {
+        employeeService.showAll(); //Метод выбросит MapIsEmpty, если мапа пуста
         return employeeService.showAll()
                 .stream()
                 .filter(e -> e.getDepartment() == departmentId)
@@ -28,6 +29,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Employee getMinSalaryByDepartment(int departmentId) {
+        employeeService.showAll(); //Метод выбросит MapIsEmpty, если мапа пуста
         return employeeService.showAll()
                 .stream()
                 .filter(e -> e.getDepartment() == departmentId)
@@ -37,24 +39,16 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public double getSalaryByDepartment(int departmentId) {
-
-        List<Employee> employeeList = employeeService.showAll()
+        return employeeService.showAll()
                 .stream()
                 .filter(e -> e.getDepartment() == departmentId)
-                .toList();
-
-        if (employeeList.isEmpty()) {
-            throw new EmployeeNotFoundException();
-        }
-
-        return employeeList
-                .stream()
                 .mapToDouble(Employee::getSalary)
-                .sum();
+                .reduce(0d, (Double::sum));
     }
 
     @Override
     public List<Employee> getAllEmployeesInDepartment(Integer departmentId) {
+        employeeService.showAll();
         return employeeService.showAll()
                 .stream()
                 .filter(x -> x.getDepartment() == departmentId)
@@ -65,7 +59,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Map<Integer, List<Employee>> getAllEmployeesByDepartmentGroups() {
         return employeeService.showAll()
                 .stream()
-                .collect(Collectors.groupingBy(x -> x.getDepartment()));
+                .collect(Collectors.groupingBy(Employee::getDepartment));
     }
 }
 

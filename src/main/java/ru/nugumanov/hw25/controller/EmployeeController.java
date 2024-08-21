@@ -10,7 +10,7 @@ import java.util.Collection;
 @RestController()
 @RequestMapping("/employee")
 public class EmployeeController {
-    EmployeeServiceImpl employeeServiceImpl;
+    private final EmployeeServiceImpl employeeServiceImpl;
 
     public EmployeeController(EmployeeServiceImpl employeeServiceImpl) {
         this.employeeServiceImpl = employeeServiceImpl;
